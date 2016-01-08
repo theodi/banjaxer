@@ -16,7 +16,7 @@ module Banjaxer
     end
 
     def tell_the_time
-      puts Time.new.strftime "%H:%M on %B %d, %Y"
+      puts Time.new.strftime "%H:%M on %A %B %-d, %Y"
     end
   end
 end

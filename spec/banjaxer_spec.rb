@@ -38,7 +38,7 @@ module Banjaxer
       end
 
       it 'knows what time it is' do
-        expect(output).to match '09:30 on June 15, 1974'
+        expect(output).to match '09:30 on Saturday June 15, 1974'
       end
     end
   end

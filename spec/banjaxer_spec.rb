@@ -28,6 +28,15 @@ module Banjaxer
       end
     end
 
-    #context 'with args'
+    context 'with options' do
+      it 'is fine with no options' do
+        expect { subject.embiggen 'Springfield' }.to output(/embiggening Springfield/).to_stdout
+      end
+
+      it 'can handle an option' do
+        subject.options = {json: true}
+        expect { subject.embiggen 'Springfield' }.to output(/{"embiggening":"Springfield"}/).to_stdout
+      end
+    end
   end
 end

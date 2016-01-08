@@ -31,5 +31,18 @@ module Banjaxer
 
       exit code
     end
+
+    desc 'embiggen', 'Embiggen something'
+    method_option :json,
+                  type: :boolean,
+                  aliases: '-j',
+                  description: 'Return JSON on the console'
+    def embiggen value
+      if options[:json]
+        puts({ embiggening: value }.to_json)
+      else
+        puts "embiggening #{value}"
+      end
+    end
   end
 end

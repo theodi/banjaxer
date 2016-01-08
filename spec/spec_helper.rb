@@ -6,17 +6,20 @@ require 'timecop'
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'banjaxer'
 
-def capture(stream)
-  begin
-    stream = stream.to_s
-    eval "$#{stream} = StringIO.new"
-    yield
-    result = eval("$#{stream}").string
-  ensure
-    eval("$#{stream} = #{stream.upcase}")
+RSpec.configure do |config|
+  config.order = 'random'
+end
+
+RSpec::Matchers.define :exit_with_status do |expected|
+  match do |actual|
+    begin
+      actual.call
+    rescue SystemExit => e
+      expect(e.status).to eq expected
+    end
   end
 
-  result
+  supports_block_expectations
 end
 
 VCR.configure do |c|

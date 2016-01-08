@@ -1,7 +1,19 @@
-require 'spec_helper'
+module Banjaxer
+  describe CLI do
+    let :subject do
+      described_class.new
+    end
 
-describe Banjaxer do
-  it 'has a version number' do
-    expect(Banjaxer::VERSION).not_to be nil
+    context 'version' do
+      let :output do
+        capture :stdout do
+          subject.version
+        end
+      end
+
+      it 'has a version' do
+        expect(output).to match "banjaxer version #{VERSION}"
+      end
+    end
   end
 end

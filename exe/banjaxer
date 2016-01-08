@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require 'banjaxer'
+Banjaxer::CLI.start

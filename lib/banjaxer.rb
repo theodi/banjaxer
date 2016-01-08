@@ -14,5 +14,9 @@ module Banjaxer
       h = HTTParty.get url, headers: { 'Accept' => 'application/json' }
       puts "Content-Length is #{h.headers['Content-Length']}"
     end
+
+    def tell_the_time
+      puts Time.new.strftime "%H:%M on %B %d, %Y"
+    end
   end
 end

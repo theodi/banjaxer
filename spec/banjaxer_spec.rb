@@ -27,5 +27,19 @@ module Banjaxer
         expect(output).to match 'Content-Length is 808'
       end
     end
+
+    context 'Tell the time' do
+      let :output do
+        capture :stdout do
+          Timecop.freeze Time.local 1974, 06, 15, 9, 30 do
+            subject.tell_the_time
+          end
+        end
+      end
+
+      it 'knows what time it is' do
+        expect(output).to match '09:30 on June 15, 1974'
+      end
+    end
   end
 end

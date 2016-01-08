@@ -19,13 +19,11 @@ module Banjaxer
     end
 
     context 'deal with exit codes' do
-      it 'exits with a zero' do
-        expect { subject.cromulise 'zero' }.to raise_error(SystemExit)
-        expect { subject.cromulise 'zero' }.to exit_with_status 0
+      it 'exits with a zero by default' do
+        expect { subject.cromulise }.to exit_with_status 0
       end
 
       it 'exits with a one' do
-        expect { subject.cromulise 'one' }.to raise_error(SystemExit)
         expect { subject.cromulise 'one' }.to exit_with_status 1
       end
     end

@@ -22,7 +22,7 @@ module Banjaxer
     end
 
     desc 'cromulise', 'Exit with the supplied status'
-    def cromulise status
+    def cromulise status = 'zero'
       lookups = {
         'zero' => 0,
         'one' => 1

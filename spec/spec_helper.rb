@@ -1,5 +1,6 @@
 require 'coveralls'
 Coveralls.wear!
+require 'vcr'
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'banjaxer'
@@ -15,4 +16,12 @@ def capture(stream)
   end
 
   result
-end 
+end
+
+VCR.configure do |c|
+  c.cassette_library_dir = 'spec/fixtures/vcr'
+  c.hook_into :webmock
+  c.default_cassette_options = { :record => :once }
+  c.allow_http_connections_when_no_cassette = false
+  c.configure_rspec_metadata!
+end

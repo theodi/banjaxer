@@ -21,17 +21,6 @@ module Banjaxer
       puts Time.new.strftime "%H:%M on %A %B %-d, %Y"
     end
 
-    desc 'cromulise', 'Exit with the supplied status'
-    def cromulise status = 'zero'
-      lookups = {
-        'zero' => 0,
-        'one' => 1
-      }
-      code = lookups.fetch(status, 99)
-
-      exit code
-    end
-
     desc 'embiggen', 'Embiggen something'
     method_option :json,
                   type: :boolean,
@@ -43,6 +32,17 @@ module Banjaxer
       else
         puts "embiggening #{value}"
       end
+    end
+  
+    desc 'cromulise', 'Exit with the supplied status'
+    def cromulise status = 'zero'
+      lookups = {
+        'zero' => 0,
+        'one' => 1
+      }
+      code = lookups.fetch(status, 99)
+
+      exit code
     end
   end
 end

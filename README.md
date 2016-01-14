@@ -259,7 +259,7 @@ This matcher takes the _expected_ string from the spec and reads the _actual_ fi
 
 I originally wrote these as normal static methods, but it occurred to me that everything would be a lot more elegant if they were `String` instance methods. The interesting (and possibly brittle) thing here is the `#is_regex` stuff: if the string _looks_ like a Regular Expression (i.e. with leading and trailing slashes) then we take the body of it and turn it into an _actual_ regular expression and then do our comparison against that. I think this may bite me somewhere down the road.
 
-This matcher is significantly more sophisticated than the `exit_with_status` one - so much so that it became necessary to [generate Rspec with Rspec](https://github.com/theodi/banjaxer/blob/master/spec/matcher/have_content_spec.rb)
+This matcher is significantly more sophisticated than the `exit_with_status` one - so much so that it became necessary to [generate Rspec with Rspec](https://github.com/theodi/banjaxer/blob/master/spec/matcher/have_content_spec.rb).
 
 ## Suppressing console output
 

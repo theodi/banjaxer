@@ -285,6 +285,19 @@ end
 
 Before each test, we redirect STDOUT and STDERR to `/dev/null`, then bring them back afterwards. Note that this is not platform-independent, you need to something different on Windows, but I don't know what. Also note that this causes _pry_ to do _really_ odd things - disable this if you want to reliably pry into your code (maybe this should be wrapped in an `unless ENV['PRY']` guard of some sort).
 
+## Running the code
+
+The code is all [here](https://github.com/theodi/banjaxer), please feel free to have a look at it and run it:
+
+```
+git clone https://github.com/theodi/banjaxer
+cd banjaxer
+bundle
+bundle exec rake
+```
+
+As always, feedback, PRs etc are welcome.
+
 ## Next steps
 
 I seem to have replicated quite a lot of the functionality of Aruba, but with the added benefit of not using Aruba. I think the thing to do now _might_ be to package this up into a Gem and use it on a real project.

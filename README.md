@@ -245,7 +245,18 @@ Scenario: Write file
   """
 ```
 
-required considerably more work. The `#have_content` custom matcher looks like:
-```ruby
+required considerably more work. The full code for the `have_content` custom matcher (and its supporting bits and pieces) can be seen  [here](https://github.com/theodi/banjaxer/blob/master/spec/support/matchers/have_content.rb). There's quite a bit going on in this, so let's dig in:
 
-```
+#### [Temporary output directory](https://github.com/theodi/banjaxer/blob/master/spec/support/matchers/have_content.rb#L1-L13)
+
+Presumably our CLI app would generate any output files in its Present Working Directory, but we can get Rspec to make us a temporary directory and switch to that before each test (and then bounce back out of it afterwards). Notice that it deletes the _tmp/_ directory before it starts, _not_ at the end of the run. I stole this idea from Aruba and it means that in the event of a spec failure, we can run just the failing test and then debug by having a look at exactly the output it produced.
+
+#### [Custom matcher](https://github.com/theodi/banjaxer/blob/master/spec/support/matchers/have_content.rb#L15-L39)
+
+This matcher takes the _expected_ string from the spec and reads the _actual_ file, then splits them both into lines and compares them - if it finds a mismatch, then `pass` becomes `false` and we get a failure. The clever stuff is in the next section, though:
+
+#### [Monkey-patching `String`](https://github.com/theodi/banjaxer/blob/master/spec/support/matchers/have_content.rb#L41-L61)
+
+I originally wrote these as normal static methods, but it occurred to me that everything would be a lot more elegant if they were `String` instance methods. The interesting (and possibly brittle) thing here is the `#is_regex` stuff: if the string _looks_ like a Regular Expression (i.e. with leading and trailing slashes) then we take the body of it and turn it into an _actual_ regular expression and then do our comparison against that. I think this may bite me somewhere down the road.
+
+This matcher is significantly more sophisticated than the `exit_with_status` one - so much so that it became necessary to [generate Rspec with Rspec](https://github.com/theodi/banjaxer/blob/master/spec/matcher/have_content_spec.rb)

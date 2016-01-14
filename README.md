@@ -48,7 +48,7 @@ module Banjaxer
 end
 ```
 
-In the spec, we set up a _new_ instance of our class, which is a _Thor_, then we call its `#version` method and inspect whatever lands on STDOUT.
+In the spec, we set up a instance of our class, which is a _Thor_, then we call its `#version` method and inspect whatever lands on STDOUT.
 
 There is a certain amount of sleight-of-hand going on in this: note that our argument to the _output_ matcher is a regex, even though we really want to match a string. That's because the actual output string will have a `"\n"` on the end of it, so we'd have to match that explicitly.
 
@@ -83,13 +83,13 @@ end
 We might notice some more prestidigitation here, when we consider how Thor works: it takes something like `banjaxer get_url http://uncleclive.herokuapp.com/banjax` from STDIN, and turns that (via the `./exe/banjaxer` executable) into a call to `#version('http://uncleclive.herokuapp.com/banjax')` - we're bypassing that
 step and making the method call directly. The corresponding Aruba:
 
-```ruby
+```
 Scenario: Get url		
   When I successfully run `multichain get_url http://uncleclive.herokuapp.com/banjax`		
   Then the output should contain "Content-Length is 808"
 ```
 
-will do _exactly_ what it says, which may be a more accurate test, but notice that we've dropped a `:vcr` into the Rspec version [_and it worked as expected_](https://github.com/theodi/banjaxer/blob/ed1a4801e1f250113310d607eee5e903200bfac2/spec/fixtures/vcr/Banjaxer_CLI/gets_the_url.yml)
+will do _exactly_ what it says, which may be a more accurate test, but notice that we've dropped a `:vcr` into the Rspec version [_and it worked as expected_](https://github.com/theodi/banjaxer/blob/ed1a4801e1f250113310d607eee5e903200bfac2/spec/fixtures/vcr/Banjaxer_CLI/gets_the_url.yml), which simply would not happen with Aruba.
 
 ### With options
 
@@ -103,7 +103,7 @@ module Banjaxer
     context 'with options' do
       it 'can handle an option' do
         subject.options = {json: true}
-        expect { subject.embiggen 'Springfield' }.to output(/^{"embiggening":"Springfield"}/).to_stdout
+        expect { subject.embiggen 'the smallest man' }.to output(/^{"embiggening":"the smallest man"}/).to_stdout
       end
     end
   end
@@ -129,4 +129,66 @@ module Banjaxer
 end
 ```
 
-Some more trickery here: 
+Some more trickery here, which took me a little while to figure out: when we pass options on the command-line, Thor shoves them into the _options_ hash on the instance. So in our spec, we set up that hash ourselves with `subject.options = {json: true}` and then call the method.
+
+### Testing exit statuses
+
+```ruby
+module Banjaxer
+  describe CLI do
+    let :subject do
+      described_class.new
+    end
+
+    context 'deal with exit codes' do
+      it 'exits with a zero by default' do
+        expect { subject.cromulise }.to exit_with_status 0
+      end
+    end
+  end
+end
+```
+
+```ruby
+module Banjaxer
+  class CLI < Thor
+    desc 'cromulise', 'Exit with the supplied status'
+    def cromulise status = 'zero'
+      lookups = {
+        'zero' => 0,
+        'one' => 1
+      }
+      code = lookups.fetch(status, 99)
+
+      puts "Exiting with a #{code}"
+      exit code
+    end
+  end
+end
+```
+
+Checking the exit status is supported out-of-the-box in Aruba:
+
+```
+Scenario: Get version
+  When I run `multichain -v`
+  Then the exit status should be 0
+```
+
+but for Rspec, we have to cook up our own [custom matcher](https://www.relishapp.com/rspec/rspec-expectations/v/2-4/docs/custom-matchers/define-matcher):
+
+```ruby
+RSpec::Matchers.define :exit_with_status do |expected|
+  match do |actual|
+    expect { actual.call }.to raise_error(SystemExit)
+
+    begin
+      actual.call
+    rescue SystemExit => e
+      expect(e.status).to eq expected
+    end
+  end
+
+  supports_block_expectations
+end
+```

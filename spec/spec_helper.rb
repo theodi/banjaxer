@@ -1,6 +1,5 @@
 require 'coveralls'
 Coveralls.wear!
-require 'vcr'
 require 'timecop'
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
@@ -8,26 +7,22 @@ require 'banjaxer'
 
 RSpec.configure do |config|
   config.order = 'random'
-end
 
-RSpec::Matchers.define :exit_with_status do |expected|
-  match do |actual|
-    expect { actual.call }.to raise_error(SystemExit)
-
-    begin
-      actual.call
-    rescue SystemExit => e
-      expect(e.status).to eq expected
-    end
+  # Suppress CLI output. This *will* fuck with Pry
+  original_stderr = $stderr
+  original_stdout = $stdout
+  config.before(:all) do
+    # Redirect stderr and stdout
+    $stderr = File.new '/dev/null', 'w'
+    $stdout = File.new '/dev/null', 'w'
   end
 
-  supports_block_expectations
+  config.after(:all) do
+    $stderr = original_stderr
+    $stdout = original_stdout
+  end
 end
 
-VCR.configure do |c|
-  c.cassette_library_dir = 'spec/fixtures/vcr'
-  c.hook_into :webmock
-  c.default_cassette_options = { :record => :once }
-  c.allow_http_connections_when_no_cassette = false
-  c.configure_rspec_metadata!
-end
+require_relative 'support/vcr_setup'
+
+Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}

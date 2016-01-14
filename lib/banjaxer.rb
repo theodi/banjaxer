@@ -33,7 +33,7 @@ module Banjaxer
         puts "embiggening #{value}"
       end
     end
-  
+
     desc 'cromulise', 'Exit with the supplied status'
     def cromulise status = 'zero'
       lookups = {
@@ -42,6 +42,7 @@ module Banjaxer
       }
       code = lookups.fetch(status, 99)
 
+      puts "Exiting with a #{code}"
       exit code
     end
   end

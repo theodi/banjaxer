@@ -20,12 +20,12 @@ module Banjaxer
 
     context 'with options' do
       it 'is fine with no options' do
-        expect { subject.embiggen 'Springfield' }.to output(/^embiggening Springfield$/).to_stdout
+        expect { subject.embiggen 'the smallest man' }.to output(/^embiggening the smallest man$/).to_stdout
       end
 
       it 'can handle an option' do
         subject.options = {json: true}
-        expect { subject.embiggen 'Springfield' }.to output(/^{"embiggening":"Springfield"}/).to_stdout
+        expect { subject.embiggen 'the smallest man' }.to output(/^{"embiggening":"the smallest man"}/).to_stdout
       end
     end
 
@@ -37,6 +37,10 @@ module Banjaxer
       it 'exits with a one' do
         expect { subject.cromulise 'one' }.to exit_with_status 1
       end
+    end
+
+    context 'read output files' do
+
     end
   end
 end

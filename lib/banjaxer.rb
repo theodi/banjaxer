@@ -45,5 +45,12 @@ module Banjaxer
       puts "Exiting with a #{code}"
       exit code
     end
+
+    desc 'say', 'Say the word'
+    def say word, outfile = 'said'
+      File.open outfile, 'w' do |f|
+        f.write "The word was:\n#{word}"
+      end
+    end
   end
 end

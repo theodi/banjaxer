@@ -85,7 +85,7 @@ step and making the method call directly. The corresponding Aruba:
 
 ```
 Scenario: Get url		
-  When I successfully run `multichain get_url http://uncleclive.herokuapp.com/banjax`		
+  When I successfully run `banjaxer get_url http://uncleclive.herokuapp.com/banjax`		
   Then the output should contain "Content-Length is 808"
 ```
 
@@ -171,7 +171,7 @@ Checking the exit status is supported out-of-the-box in Aruba:
 
 ```
 Scenario: Get version
-  When I run `multichain -v`
+  When I run `banjaxer -v`
   Then the exit status should be 0
 ```
 
@@ -191,4 +191,61 @@ RSpec::Matchers.define :exit_with_status do |expected|
 
   supports_block_expectations
 end
+```
+
+This is surprisingly simple: we just `#call` the method passed in as `actual`, trap the exception it raises, and check its `#status` against the expectation. That `supports_block_expectations` is apparently required because this matcher actually calls a block (but this is a bit magical and I don't fully understand it, I just know that it didn't work without it).
+
+### Inspecting output files
+
+```ruby
+module Banjaxer
+  describe CLI do
+    let :subject do
+      described_class.new
+    end
+
+    context 'read output files' do
+      it 'writes the expected output file' do
+        subject.say 'monorail'
+        expect('said').to have_content (
+        """
+        The word was:
+          monorail
+        """
+        )
+      end
+    end
+  end
+end
+```
+
+```ruby
+module Banjaxer
+  class CLI < Thor
+    desc 'say', 'Say the word'
+    def say word, outfile = 'said'
+      File.open outfile, 'w' do |f|
+        f.write "The word was:\n#{word}"
+      end
+    end
+  end
+end
+```
+
+Replicating this (very useful) feature of Aruba:
+
+```
+Scenario: Write file
+  When I run `banjaxer say monorail`
+  Then a file named "said" should exist
+  And the file named "said" should contain:  
+  """
+  The word was:
+    monorail
+  """
+```
+
+required considerably more work. The `#have_content` custom matcher looks like:
+```ruby
+
 ```

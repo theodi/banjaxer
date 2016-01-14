@@ -40,7 +40,25 @@ module Banjaxer
     end
 
     context 'read output files' do
+      it 'writes the expected output file' do
+        subject.say 'monorail'
+        expect('said').to have_content (
+        """
+        The word was:
+          monorail
+        """
+        )
+      end
 
+      it 'matches with a regular expression' do
+        subject.say 'Lee Carvallo'
+        expect('said').to have_content (
+        """
+        The word was:
+        /Carvallo/
+        """
+        )
+      end
     end
   end
 end

@@ -8,19 +8,7 @@ require 'banjaxer'
 RSpec.configure do |config|
   config.order = 'random'
 
-#  # Use tmp/ to write files
-#  $pwd = FileUtils.pwd
-#  config.before(:each) do
-#    FileUtils.rm_rf 'tmp'
-#    FileUtils.mkdir_p 'tmp'
-#    FileUtils.cd 'tmp'
-#  end
-#
-#  config.after(:each) do
-#    FileUtils.cd $pwd
-#  end
-
-  # Suppress CLI output. This *will* fuck with Pry
+  # Suppress CLI output. This *will* break Pry
   original_stderr = $stderr
   original_stdout = $stdout
   config.before(:all) do

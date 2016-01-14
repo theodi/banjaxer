@@ -260,3 +260,33 @@ This matcher takes the _expected_ string from the spec and reads the _actual_ fi
 I originally wrote these as normal static methods, but it occurred to me that everything would be a lot more elegant if they were `String` instance methods. The interesting (and possibly brittle) thing here is the `#is_regex` stuff: if the string _looks_ like a Regular Expression (i.e. with leading and trailing slashes) then we take the body of it and turn it into an _actual_ regular expression and then do our comparison against that. I think this may bite me somewhere down the road.
 
 This matcher is significantly more sophisticated than the `exit_with_status` one - so much so that it became necessary to [generate Rspec with Rspec](https://github.com/theodi/banjaxer/blob/master/spec/matcher/have_content_spec.rb)
+
+## Suppressing console output
+
+Any self-respecting CLI app is likely to be generating feedback on the command line, but this is going to pollute our Rspec output. We can suppress it with something like this in the *spec_helper*:
+
+```ruby
+RSpec.configure do |config|
+  # Suppress CLI output. This *will* break Pry
+  original_stderr = $stderr
+  original_stdout = $stdout
+  config.before(:all) do
+    # Redirect stderr and stdout
+    $stderr = File.new '/dev/null', 'w'
+    $stdout = File.new '/dev/null', 'w'
+  end
+
+  config.after(:all) do
+    $stderr = original_stderr
+    $stdout = original_stdout
+  end
+end
+```
+
+Before each test, we redirect STDOUT and STDERR to `/dev/null`, then bring them back afterwards. Note that this is not platform-independent, you need to something different on Windows, but I don't know what. Also note that this causes _pry_ to do _really_ odd things - disable this if you want to reliably pry into your code (maybe this should be wrapped in an `unless ENV['PRY']` guard of some sort).
+
+## Next steps
+
+I seem to have replicated quite a lot of the functionality of Aruba, but with the added benefit of not using Aruba. I think the thing to do now _might_ be to package this up into a Gem and use it on a real project.
+
+I sincerely hope somebody else finds this useful - I certainly did :)
